@@ -9,6 +9,11 @@ import javafx.scene.shape.Rectangle;
 public class CartaView extends StackPane {
     private CartaInglesa carta;
     private final Image SPRITESHEET = new Image("file:/home/jpasos/Documents/POO Lab/Solitaire/src/English_pattern_playing_cards_deck.svg");
+    // Imagen dimensiones Ancho: 5100px, Alto: 2310px
+    // imagen de 4 filas (picas, corazones, diamantes, tréboles) y 13 columnas (A, 2-10, J, Q, K.
+    // cada carta tiene un ancho de 5100/13 = 392.3px y un alto de 2310/4 = 577.5px
+    private static final double ANCHO_CARTA = 392.3;
+    private static final double ALTO_CARTA =  577.5;
 
     public CartaView(CartaInglesa carta) {
         this.carta = carta;
