@@ -2,6 +2,7 @@ package GUI;
 
 import DeckOfCards.CartaInglesa;
 import javafx.geometry.Pos;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -27,6 +28,14 @@ public class WastePileView extends StackPane {
         card.setStroke(Color.BLACK);
         card.setStrokeWidth(2);
 
+        // Agregar sombra
+        DropShadow shadow = new DropShadow();
+        shadow.setRadius(5);
+        shadow.setOffsetX(3);
+        shadow.setOffsetY(3);
+        shadow.setColor(Color.rgb(0, 0, 0, 0.4));
+        card.setEffect(shadow);
+
         // Crear el texto
         cardText = new Text();
         cardText.setFont(Font.font("Arial", FontWeight.BOLD, 18));
@@ -38,6 +47,10 @@ public class WastePileView extends StackPane {
 
         // Hacer clickeable
         setOnMouseClicked(event -> handleClick());
+
+        // Efecto hover
+        setOnMouseEntered(e -> card.setStrokeWidth(3));
+        setOnMouseExited(e -> card.setStrokeWidth(2));
     }
 
     /**
@@ -72,5 +85,9 @@ public class WastePileView extends StackPane {
     private void handleClick() {
         // Este método será implementado cuando se integre con el controlador
         System.out.println("WastePile clicked");
+    }
+
+    public WastePile getWastePile() {
+        return wastePile;
     }
 }

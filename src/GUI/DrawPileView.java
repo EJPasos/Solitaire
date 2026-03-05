@@ -1,6 +1,7 @@
 package GUI;
 
 import javafx.geometry.Pos;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -26,6 +27,14 @@ public class DrawPileView extends StackPane {
         card.setStroke(Color.BLACK);
         card.setStrokeWidth(2);
 
+        // Agregar sombra
+        DropShadow shadow = new DropShadow();
+        shadow.setRadius(5);
+        shadow.setOffsetX(3);
+        shadow.setOffsetY(3);
+        shadow.setColor(Color.rgb(0, 0, 0, 0.4));
+        card.setEffect(shadow);
+
         // Crear el texto
         cardText = new Text();
         cardText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
@@ -37,6 +46,10 @@ public class DrawPileView extends StackPane {
 
         // Hacer clickeable
         setOnMouseClicked(event -> handleClick());
+
+        // Efecto hover
+        setOnMouseEntered(e -> card.setStrokeWidth(3));
+        setOnMouseExited(e -> card.setStrokeWidth(2));
     }
 
     /**
@@ -44,12 +57,12 @@ public class DrawPileView extends StackPane {
      */
     public void update() {
         if (drawPile.hayCartas()) {
-            card.setFill(Color.DARKGREEN);
-            cardText.setText("@");
+            card.setFill(Color.rgb(30, 80, 180));
+            cardText.setText("🂠");
             cardText.setFill(Color.WHITE);
         } else {
             card.setFill(Color.LIGHTGRAY);
-            cardText.setText("-E-");
+            cardText.setText("↻");
             cardText.setFill(Color.DARKGRAY);
         }
     }

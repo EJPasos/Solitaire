@@ -231,6 +231,10 @@ public class SolitaireGame {
         return lastFoundationUpdated;
     }
 
+    public ArrayList<FoundationDeck> getFoundation() {
+        return foundation;
+    }
+
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();

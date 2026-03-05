@@ -2,24 +2,58 @@ package GUI;
 
 import DeckOfCards.CartaInglesa;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import solitaire.TableauDeck;
 
 public class TableauView extends VBox {
     private TableauDeck mazo;
     private int indice;
+    private static final double CARD_OVERLAP = 25; // Píxeles que se ve de cada carta
 
     public TableauView(TableauDeck mazo, int indice) {
         this.mazo = mazo;
         this.indice = indice;
-        this.setSpacing(-90); // Para solapar las cartas verticalmente
+        this.setSpacing(-95); // Para solapar las cartas verticalmente (negativo para overlap)
+        this.setMinHeight(400);
         refrescar();
-    }
 
+        // Agregar funcionalidad de clic
+        setOnMouseClicked(event -> handleClick());
+    }
 
     public void refrescar() {
         getChildren().clear();
-        for (CartaInglesa c : mazo.getCards()) {
-            getChildren().add(new CartaView(c));
+
+        // Si no hay cartas, mostrar espacio vacío
+        if (mazo.getCards().isEmpty()) {
+            Rectangle placeholder = new Rectangle(70, 100);
+            placeholder.setArcWidth(10);
+            placeholder.setArcHeight(10);
+            placeholder.setFill(Color.TRANSPARENT);
+            placeholder.setStroke(Color.DARKGRAY);
+            placeholder.setStrokeWidth(2);
+            getChildren().add(placeholder);
+        } else {
+            // Agregar todas las cartas
+            for (CartaInglesa c : mazo.getCards()) {
+                CartaView cartaView = new CartaView(c);
+                getChildren().add(cartaView);
+            }
         }
     }
+
+    private void handleClick() {
+        System.out.println("Tableau " + (indice + 1) + " clicked");
+        // Aquí se puede agregar lógica para mover cartas
+    }
+
+    public TableauDeck getMazo() {
+        return mazo;
+    }
+
+    public int getIndice() {
+        return indice;
+    }
 }
+

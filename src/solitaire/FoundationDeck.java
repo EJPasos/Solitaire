@@ -104,4 +104,12 @@ public class FoundationDeck {
         }
         return ultimaCarta;
     }
+
+    /**
+     * Obtiene el palo del FoundationDeck.
+     * @return el palo del foundation
+     */
+    public Palo getPalo() {
+        return palo;
+    }
 }
