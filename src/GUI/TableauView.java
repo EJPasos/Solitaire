@@ -6,10 +6,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import solitaire.TableauDeck;
 
+import java.util.function.Consumer;
+
 public class TableauView extends VBox {
     private TableauDeck mazo;
     private int indice;
     private static final double CARD_OVERLAP = 25; // Píxeles que se ve de cada carta
+    private Consumer<Integer> onTableauClick;
 
     public TableauView(TableauDeck mazo, int indice) {
         this.mazo = mazo;
@@ -44,8 +47,13 @@ public class TableauView extends VBox {
     }
 
     private void handleClick() {
-        System.out.println("Tableau " + (indice + 1) + " clicked");
-        // Aquí se puede agregar lógica para mover cartas
+        if (onTableauClick != null) {
+            onTableauClick.accept(indice);
+        }
+    }
+
+    public void setOnTableauClick(Consumer<Integer> onTableauClick) {
+        this.onTableauClick = onTableauClick;
     }
 
     public TableauDeck getMazo() {
@@ -56,4 +64,3 @@ public class TableauView extends VBox {
         return indice;
     }
 }
-

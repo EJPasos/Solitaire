@@ -11,12 +11,15 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import solitaire.FoundationDeck;
 
+import java.util.function.Consumer;
+
 public class FundationDeckView extends StackPane {
     private FoundationDeck foundationDeck;
     private Rectangle card;
     private Text cardText;
     private static final double CARD_WIDTH = 80;
     private static final double CARD_HEIGHT = 120;
+    private Consumer<FoundationDeck> onFoundationClick;
 
     public FundationDeckView(FoundationDeck foundationDeck) {
         this.foundationDeck = foundationDeck;
@@ -97,8 +100,13 @@ public class FundationDeckView extends StackPane {
      * Maneja el click en el FoundationDeck.
      */
     private void handleClick() {
-        // Este método será implementado cuando se integre con el controlador
-        System.out.println("FoundationDeck clicked: " + foundationDeck.getPalo());
+        if (onFoundationClick != null) {
+            onFoundationClick.accept(foundationDeck);
+        }
+    }
+
+    public void setOnFoundationClick(Consumer<FoundationDeck> onFoundationClick) {
+        this.onFoundationClick = onFoundationClick;
     }
 
     public FoundationDeck getFoundationDeck() {
