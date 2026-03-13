@@ -17,7 +17,7 @@ public class TableauView extends VBox {
     public TableauView(TableauDeck mazo, int indice) {
         this.mazo = mazo;
         this.indice = indice;
-        this.setSpacing(-95); // Para solapar las cartas verticalmente (negativo para overlap)
+        this.setSpacing(-80); // Para solapar las cartas verticalmente (negativo para overlap)
         this.setMinHeight(400);
         refrescar();
 
@@ -30,7 +30,7 @@ public class TableauView extends VBox {
 
         // Si no hay cartas, mostrar espacio vacío
         if (mazo.getCards().isEmpty()) {
-            Rectangle placeholder = new Rectangle(70, 100);
+            Rectangle placeholder = new Rectangle(CartaView.CARD_WIDTH, CartaView.CARD_HEIGHT);
             placeholder.setArcWidth(10);
             placeholder.setArcHeight(10);
             placeholder.setFill(Color.TRANSPARENT);

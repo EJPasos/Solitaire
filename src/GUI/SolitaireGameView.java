@@ -23,6 +23,10 @@ public class SolitaireGameView extends Application {
     private VBox root;
     private Button newGameButton;
     private Button resetButton;
+    private enum SourceType { NONE, WASTE, TABLEAU }
+    private SourceType selectedType = SourceType.NONE;
+    private int selectedIndex = -1;
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -75,6 +79,23 @@ public class SolitaireGameView extends Application {
         foundationViews = new ArrayList<>();
         for (FoundationDeck foundation : game.getFoundation()) {
             FundationDeckView foundationView = new FundationDeckView(foundation);
+
+            foundationView.setOnFoundationClick(f -> {
+                boolean moved = false;
+
+                if (selectedType == SourceType.TABLEAU) {
+                    moved = game.moveTableauToFoundation(selectedIndex);
+                } else if (selectedType == SourceType.WASTE) {
+                    moved = game.moveWasteToFoundation();
+                }
+
+                if (moved) {
+                    updateAllViews();
+                    checkGameOver();
+                }
+                resetSelection();
+            });
+
             foundationViews.add(foundationView);
             topSection.getChildren().add(foundationView);
         }
@@ -95,6 +116,10 @@ public class SolitaireGameView extends Application {
         int index = 0;
         for (TableauDeck tableau : game.getTableau()) {
             TableauView tableauView = new TableauView(tableau, index);
+
+            int finalIndex = index + 1; // 1..7 para lógica del juego
+            tableauView.setOnTableauClick(idx -> handleTableauClick(finalIndex));
+
             tableauViews.add(tableauView);
 
             // Crear un contenedor para cada tableau con borde
@@ -135,6 +160,9 @@ public class SolitaireGameView extends Application {
      * Maneja el click en el DrawPile.
      */
     private void handleDrawPileClick() {
+        // importante: si el usuario roba/recarga, limpiar selección previa
+        resetSelection();
+
         if (game.getDrawPile().hayCartas()) {
             game.drawCards();
         } else {
@@ -147,10 +175,46 @@ public class SolitaireGameView extends Application {
      * Maneja el click en el WastePile.
      */
     private void handleWastePileClick() {
-        // Intentar mover al foundation
-        if (game.moveWasteToFoundation()) {
-            updateAllViews();
-            checkGameOver();
+        // Si no hay selección, seleccionar WASTE como origen
+        if (selectedType == SourceType.NONE) {
+            if (game.getWastePile().hayCartas()) {
+                selectedType = SourceType.WASTE;
+                selectedIndex = -1;
+                wastePileView.setSelected(true);
+            }
+            return;
+        }
+
+        // Si ya había selección, limpiar (toggle simple)
+        resetSelection();
+    }
+
+    /**
+     * Maneja el click en un Tableau.
+     */
+    private void handleTableauClick(int tableauIndex) {
+        if (selectedType == SourceType.NONE) {
+            // PASO 1: seleccionar origen
+            if (!game.getTableau().get(tableauIndex - 1).getCards().isEmpty()) {
+                selectedType = SourceType.TABLEAU;
+                selectedIndex = tableauIndex;
+                highlightTableau(tableauIndex, true);
+            }
+        } else {
+            // PASO 2: intentar mover al destino
+            boolean moved = false;
+            if (selectedType == SourceType.TABLEAU) {
+                moved = game.moveTableauToTableau(selectedIndex, tableauIndex);
+            } else if (selectedType == SourceType.WASTE) {
+                moved = game.moveWasteToTableau(tableauIndex);
+            }
+
+            if (moved) {
+                updateAllViews();
+                checkGameOver();
+            }
+
+            resetSelection();
         }
     }
 
@@ -158,6 +222,11 @@ public class SolitaireGameView extends Application {
      * Actualiza todas las vistas del juego.
      */
     private void updateAllViews() {
+        // evita quedarse con selección inválida tras refrescos
+        if (selectedType != SourceType.NONE) {
+            resetSelection();
+        }
+
         drawPileView.update();
         wastePileView.update();
 
@@ -194,8 +263,33 @@ public class SolitaireGameView extends Application {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("¡Felicidades!");
             alert.setHeaderText("¡Has ganado!");
-            alert.setContentText("Has completado el juego de Solitario exitosamente.");
+            alert.setContentText("Has completado el juego.");
             alert.showAndWait();
+        }
+    }
+
+    private void resetSelection() {
+        if (selectedType == SourceType.TABLEAU && selectedIndex >= 1 && selectedIndex <= tableauViews.size()) {
+            highlightTableau(selectedIndex, false);
+        }
+        if (selectedType == SourceType.WASTE) {
+            wastePileView.setSelected(false);
+        }
+        selectedType = SourceType.NONE;
+        selectedIndex = -1;
+    }
+
+    private void highlightTableau(int tableauIndex, boolean selected) {
+        int viewIdx = tableauIndex - 1;
+        if (viewIdx < 0 || viewIdx >= tableauViews.size()) return;
+
+        TableauView tv = tableauViews.get(viewIdx);
+        if (tv.getParent() instanceof VBox container) {
+            if (selected) {
+                container.setStyle("-fx-border-color: #ffd54f; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-color: rgba(255,213,79,0.15); -fx-background-radius: 5;");
+            } else {
+                container.setStyle("-fx-border-color: #555; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-color: rgba(0,0,0,0.1); -fx-background-radius: 5;");
+            }
         }
     }
 

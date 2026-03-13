@@ -1,5 +1,7 @@
 package GUI;
 
+import DeckOfCards.CartaInglesa;
+import DeckOfCards.Palo;
 import javafx.geometry.Pos;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
@@ -12,66 +14,65 @@ import solitaire.DrawPile;
 
 public class DrawPileView extends StackPane {
     private DrawPile drawPile;
-    private Rectangle card;
-    private Text cardText;
-    private static final double CARD_WIDTH = 80;
-    private static final double CARD_HEIGHT = 120;
+    private Rectangle placeholderCard;
+    private Text placeholderText;
+    private CartaView cartaView;
+
+    private static final CartaView carta = new CartaView(new CartaInglesa(2, Palo.CORAZON, "ROJO")); // Para obtener dimensiones de carta
+
+    private static final double CARD_WIDTH = carta.getAncho();
+    private static final double CARD_HEIGHT = carta.getAlto();
 
     public DrawPileView(DrawPile drawPile) {
         this.drawPile = drawPile;
 
-        // Crear el rectángulo de la carta
-        card = new Rectangle(CARD_WIDTH, CARD_HEIGHT);
-        card.setArcWidth(10);
-        card.setArcHeight(10);
-        card.setStroke(Color.BLACK);
-        card.setStrokeWidth(2);
+        // Placeholder para estado vacío (↻)
+        placeholderCard = new Rectangle(CARD_WIDTH, CARD_HEIGHT);
+        placeholderCard.setArcWidth(10);
+        placeholderCard.setArcHeight(10);
+        placeholderCard.setStroke(Color.BLACK);
+        placeholderCard.setStrokeWidth(2);
 
-        // Agregar sombra
         DropShadow shadow = new DropShadow();
         shadow.setRadius(5);
         shadow.setOffsetX(3);
         shadow.setOffsetY(3);
         shadow.setColor(Color.rgb(0, 0, 0, 0.4));
-        card.setEffect(shadow);
+        placeholderCard.setEffect(shadow);
 
-        // Crear el texto
-        cardText = new Text();
-        cardText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        placeholderText = new Text();
+        placeholderText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
-        getChildren().addAll(card, cardText);
         setAlignment(Pos.CENTER);
-
         update();
 
-        // Hacer clickeable
         setOnMouseClicked(event -> handleClick());
-
-        // Efecto hover
-        setOnMouseEntered(e -> card.setStrokeWidth(3));
-        setOnMouseExited(e -> card.setStrokeWidth(2));
+        setOnMouseEntered(e -> {
+            if (cartaView == null) placeholderCard.setStrokeWidth(3);
+        });
+        setOnMouseExited(e -> {
+            if (cartaView == null) placeholderCard.setStrokeWidth(2);
+        });
     }
 
-    /**
-     * Actualiza la vista según el estado del DrawPile.
-     */
     public void update() {
+        getChildren().clear();
+
         if (drawPile.hayCartas()) {
-            card.setFill(Color.rgb(30, 80, 180));
-            cardText.setText("🂠");
-            cardText.setFill(Color.WHITE);
+            // Usar CartaView (carta boca abajo) en lugar de dibujar manual
+            CartaInglesa backCard = new CartaInglesa(1, Palo.CORAZON, "ROJO"); // Carta genérica boca abajo
+            cartaView = new CartaView(backCard);
+            getChildren().add(cartaView);
         } else {
-            card.setFill(Color.LIGHTGRAY);
-            cardText.setText("↻");
-            cardText.setFill(Color.DARKGRAY);
+            cartaView = null;
+            placeholderCard.setFill(Color.LIGHTGRAY);
+            placeholderText.setText("↻");
+            placeholderText.setFill(Color.DARKGRAY);
+            getChildren().addAll(placeholderCard, placeholderText);
         }
     }
 
-    /**
-     * Maneja el click en el DrawPile.
-     */
     private void handleClick() {
-        // Este método será implementado cuando se integre con el controlador
         System.out.println("DrawPile clicked");
     }
 }

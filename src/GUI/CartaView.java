@@ -16,10 +16,10 @@ public class CartaView extends StackPane {
     // Imagen dimensiones Ancho: 5100px, Alto: 2310px
     // imagen de 4 filas (picas, corazones, diamantes, tréboles) y 13 columnas (A, 2-10, J, Q, K.
     // cada carta tiene un ancho de 5100/13 = 392.3px y un alto de 2310/4 = 577.5px
-    private static final double ANCHO_CARTA = 392.3;
-    private static final double ALTO_CARTA =  577.5;
-    private static final double CARD_WIDTH = 70;
-    private static final double CARD_HEIGHT = 100;
+    protected static final double ANCHO_CARTA = 392.3;
+    protected static final double ALTO_CARTA =  577.5;
+    protected static final double CARD_WIDTH = 70;
+    protected static final double CARD_HEIGHT = 100;
 
     public CartaView(CartaInglesa carta) {
         this.carta = carta;
@@ -60,6 +60,14 @@ public class CartaView extends StackPane {
             innerPattern.setStrokeWidth(2);
             getChildren().addAll(fondo, innerPattern);
         }
+    }
+
+    public double getAncho(){
+        return CARD_WIDTH;
+    }
+
+    public double getAlto(){
+        return CARD_HEIGHT;
     }
 
     public CartaInglesa getCarta() {

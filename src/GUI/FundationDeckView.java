@@ -15,90 +15,74 @@ import java.util.function.Consumer;
 
 public class FundationDeckView extends StackPane {
     private FoundationDeck foundationDeck;
-    private Rectangle card;
-    private Text cardText;
-    private static final double CARD_WIDTH = 80;
-    private static final double CARD_HEIGHT = 120;
+    private Rectangle placeholderCard;
+    private Text placeholderText;
+    private CartaView cartaView;
+
+    private static final CartaView carta = new CartaView(new CartaInglesa(2, DeckOfCards.Palo.CORAZON, "ROJO")); // Para obtener dimensiones de carta
+    private static final double CARD_WIDTH = carta.getAncho();
+    private static final double CARD_HEIGHT = carta.getAlto();
     private Consumer<FoundationDeck> onFoundationClick;
 
     public FundationDeckView(FoundationDeck foundationDeck) {
         this.foundationDeck = foundationDeck;
 
-        // Crear el rectángulo de la carta
-        card = new Rectangle(CARD_WIDTH, CARD_HEIGHT);
-        card.setArcWidth(10);
-        card.setArcHeight(10);
-        card.setStroke(Color.BLACK);
-        card.setStrokeWidth(2);
+        placeholderCard = new Rectangle(CARD_WIDTH, CARD_HEIGHT);
+        placeholderCard.setArcWidth(10);
+        placeholderCard.setArcHeight(10);
+        placeholderCard.setStroke(Color.BLACK);
+        placeholderCard.setStrokeWidth(2);
 
-        // Agregar sombra
         DropShadow shadow = new DropShadow();
         shadow.setRadius(5);
         shadow.setOffsetX(3);
         shadow.setOffsetY(3);
         shadow.setColor(Color.rgb(0, 0, 0, 0.4));
-        card.setEffect(shadow);
+        placeholderCard.setEffect(shadow);
 
-        // Crear el texto
-        cardText = new Text();
-        cardText.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+        placeholderText = new Text();
+        placeholderText.setFont(Font.font("Arial", FontWeight.BOLD, 18));
 
-        getChildren().addAll(card, cardText);
         setAlignment(Pos.CENTER);
-
         update();
 
-        // Hacer clickeable para futuras funcionalidades
         setOnMouseClicked(event -> handleClick());
-
-        // Efecto hover
-        setOnMouseEntered(e -> card.setStrokeWidth(3));
-        setOnMouseExited(e -> card.setStrokeWidth(2));
+        setOnMouseEntered(e -> {
+            if (cartaView == null) placeholderCard.setStrokeWidth(3);
+        });
+        setOnMouseExited(e -> {
+            if (cartaView == null) placeholderCard.setStrokeWidth(2);
+        });
     }
 
-    /**
-     * Actualiza la vista según el estado del FoundationDeck.
-     */
     public void update() {
-        if (foundationDeck.estaVacio()) {
-            // Foundation vacío - mostrar placeholder con el símbolo del palo
-            card.setFill(Color.rgb(245, 245, 245));
-            String paloSymbol = getPaloSymbol();
-            cardText.setText(paloSymbol);
+        getChildren().clear();
 
-            // Color del símbolo según el palo
+        if (foundationDeck.estaVacio()) {
+            placeholderCard.setFill(Color.rgb(245, 245, 245));
+            String paloSymbol = getPaloSymbol();
+            placeholderText.setText(paloSymbol);
+
             String palo = String.valueOf(foundationDeck.getPalo());
             if (palo.equals("♥") || palo.equals("♦")) {
-                cardText.setFill(Color.rgb(255, 100, 100, 0.5));
+                placeholderText.setFill(Color.rgb(255, 100, 100, 0.5));
             } else {
-                cardText.setFill(Color.rgb(100, 100, 100, 0.5));
+                placeholderText.setFill(Color.rgb(100, 100, 100, 0.5));
             }
-        } else {
-            // Mostrar la carta superior
-            CartaInglesa topCard = foundationDeck.getUltimaCarta();
-            card.setFill(Color.WHITE);
-            cardText.setText(topCard.toString());
 
-            // Color rojo para corazones y diamantes, negro para picas y tréboles
-            String palo = String.valueOf(topCard.getPalo());
-            if (palo.equals("♥") || palo.equals("♦")) {
-                cardText.setFill(Color.RED);
-            } else {
-                cardText.setFill(Color.BLACK);
-            }
+            cartaView = null;
+            getChildren().addAll(placeholderCard, placeholderText);
+        } else {
+            CartaInglesa topCard = foundationDeck.getUltimaCarta();
+            cartaView = new CartaView(topCard);
+            getChildren().add(cartaView);
         }
     }
 
-    /**
-     * Obtiene el símbolo del palo del Foundation.
-     */
     private String getPaloSymbol() {
         return String.valueOf(foundationDeck.getPalo());
     }
 
-    /**
-     * Maneja el click en el FoundationDeck.
-     */
     private void handleClick() {
         if (onFoundationClick != null) {
             onFoundationClick.accept(foundationDeck);
