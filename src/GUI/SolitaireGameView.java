@@ -22,7 +22,6 @@ public class SolitaireGameView extends Application {
     private ArrayList<TableauView> tableauViews;
     private VBox root;
     private Button newGameButton;
-    private Button resetButton;
     private enum SourceType { NONE, WASTE, TABLEAU }
     private SourceType selectedType = SourceType.NONE;
     private int selectedIndex = -1;
@@ -44,7 +43,7 @@ public class SolitaireGameView extends Application {
         createButtons();
 
         // Configurar la escena
-        Scene scene = new Scene(root, 1000, 700);
+        Scene scene = new Scene(root, 1300, 900);
         primaryStage.setTitle("Solitario");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -148,11 +147,7 @@ public class SolitaireGameView extends Application {
         newGameButton.setOnAction(event -> handleNewGame());
         newGameButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px;");
 
-        resetButton = new Button("Actualizar");
-        resetButton.setOnAction(event -> updateAllViews());
-        resetButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px 20px;");
-
-        buttonSection.getChildren().addAll(newGameButton, resetButton);
+        buttonSection.getChildren().addAll(newGameButton);
         root.getChildren().add(buttonSection);
     }
 

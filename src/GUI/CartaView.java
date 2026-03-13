@@ -1,25 +1,21 @@
 package GUI;
 import DeckOfCards.CartaInglesa;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+
+import java.io.File;
 
 public class CartaView extends StackPane {
-    private CartaInglesa carta;
-    private final Image SPRITESHEET = new Image("file:/home/jpasos/Documents/POO Lab/Solitaire/src/English_pattern_playing_cards_deck.svg");
-    // Imagen dimensiones Ancho: 5100px, Alto: 2310px
-    // imagen de 4 filas (picas, corazones, diamantes, tréboles) y 13 columnas (A, 2-10, J, Q, K.
-    // cada carta tiene un ancho de 5100/13 = 392.3px y un alto de 2310/4 = 577.5px
-    protected static final double ANCHO_CARTA = 392.3;
-    protected static final double ALTO_CARTA =  577.5;
-    protected static final double CARD_WIDTH = 70;
-    protected static final double CARD_HEIGHT = 100;
+    private final CartaInglesa carta;
+    private final String rutaCartas = "/home/jpasos/Documents/POO Lab/Solitaire/src/CardsImages/cartas_png/";
+    // Ejemplo carta: English_pattern_3_of_clubs.svg
+
+
+    protected static final double CARD_WIDTH = 100;
+    protected static final double CARD_HEIGHT = 140;
 
     public CartaView(CartaInglesa carta) {
         this.carta = carta;
@@ -43,12 +39,27 @@ public class CartaView extends StackPane {
         fondo.setEffect(shadow);
 
         if (carta.isFaceup()) {
-            fondo.setFill(Color.WHITE);
-            Label texto = new Label(carta.toString());
-            texto.setFont(Font.font("Arial", FontWeight.BOLD, 16));
-            texto.setTextFill(carta.getColor().equals("rojo") ? Color.RED : Color.BLACK);
-            texto.setAlignment(Pos.CENTER);
-            getChildren().addAll(fondo, texto);
+
+            // Carta boca arriba con imagen
+
+            String nombreArchivo = String.format("%d_of_%s.png",
+                    carta.getValor(),
+                    carta.getPalo().toString().toLowerCase());
+            System.out.println("Intentando cargar imagen: " + rutaCartas + nombreArchivo);
+            File file = new File(rutaCartas + nombreArchivo);
+            String local = file.toURI().toString();
+            Image imagenCarta = new Image(local);
+            javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(imagenCarta);
+            imageView.setFitWidth(CARD_WIDTH-5);
+            imageView.setFitHeight(CARD_HEIGHT-5);
+            getChildren().addAll(fondo, imageView);
+
+//            fondo.setFill(Color.WHITE);
+//            Label texto = new Label(carta.toString());
+//            texto.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+//            texto.setTextFill(carta.getColor().equals("rojo") ? Color.RED : Color.BLACK);
+//            texto.setAlignment(Pos.CENTER);
+//            getChildren().addAll(fondo, texto);
         } else {
             // Carta boca abajo con patrón
             fondo.setFill(Color.rgb(30, 80, 180));
