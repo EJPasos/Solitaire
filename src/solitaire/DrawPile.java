@@ -21,7 +21,7 @@ public class DrawPile {
         for (int i = iniciales.size() - 1; i >= 0; i--) {
             cartas.push(iniciales.get(i));
         }
-        setCuantasCartasSeEntregan(3);
+        setCuantasCartasSeEntregan(1);
     }
 
     /**
@@ -52,6 +52,7 @@ public class DrawPile {
     public ArrayList<CartaInglesa> getCartas(int cantidad) {
         ArrayList<CartaInglesa> retiradas = new ArrayList<>();
         for (int i = 0; i < cantidad; i++) {
+            if (cartas.estaVacia()) break;
             retiradas.add(cartas.pop());
         }
         return retiradas;
@@ -65,9 +66,9 @@ public class DrawPile {
      */
     public ArrayList<CartaInglesa> retirarCartas() {
         ArrayList<CartaInglesa> retiradas = new ArrayList<>();
-        int maximoARetirar = cartas.size() < cuantasCartasSeEntregan ? cartas.size() : cuantasCartasSeEntregan;
 
-        for (int i = 0; i < maximoARetirar; i++) {
+        for (int i = 0; i < cuantasCartasSeEntregan; i++) {
+            if (cartas.estaVacia()) break;
             CartaInglesa retirada = cartas.pop();
             retirada.makeFaceUp();
             retiradas.add(retirada);
@@ -84,7 +85,10 @@ public class DrawPile {
     }
 
     public CartaInglesa verCarta() {
-        return cartas.peek();
+        if (cartas.estaVacia()) return null;
+        CartaInglesa top = cartas.pop();
+        cartas.push(top);
+        return top;
     }
     /**
      * Agrega las cartas recibidas al monton y las voltea
@@ -92,7 +96,9 @@ public class DrawPile {
      * @param cartasAgregar cartas que se agregan
      */
     public void recargar(ArrayList<CartaInglesa> cartasAgregar) {
-        cartas.clear();
+        while (!cartas.estaVacia()) {
+            cartas.pop();
+        }
         for (int i = cartasAgregar.size() - 1; i >= 0; i--) {
             CartaInglesa aCarta = cartasAgregar.get(i);
             aCarta.makeFaceDown();

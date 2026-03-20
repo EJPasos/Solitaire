@@ -25,12 +25,18 @@ public class WastePile {
 
     public ArrayList<CartaInglesa> emptyPile() {
         ArrayList<CartaInglesa> pile = new ArrayList<>();
-        if (!cartas.estaVacia()) {
-            for (int i = 0; i < cartas.size(); i++) {
-                pile.add(cartas.get(i));
-            }
-            cartas.clear();
+        Pila<CartaInglesa> aux = new Pila<>(52);
+
+        // Pasar de cartas -> aux (queda invertido)
+        while (!cartas.estaVacia()) {
+            aux.push(cartas.pop());
         }
+
+        // De aux -> pile (queda en orden original de base a tope)
+        while (!aux.estaVacia()) {
+            pile.add(aux.pop());
+        }
+
         return pile;
     }
 
@@ -39,7 +45,10 @@ public class WastePile {
      * @return Carta que está encima. Si está vacía, es null.
      */
     public CartaInglesa verCarta() {
-        return cartas.peek();
+        if (cartas.estaVacia()) return null;
+        CartaInglesa top = cartas.pop();
+        cartas.push(top);
+        return top;
     }
     public CartaInglesa getCarta() {
         if (!cartas.estaVacia()) {
@@ -51,10 +60,10 @@ public class WastePile {
     @Override
     public String toString() {
         StringBuilder stb = new StringBuilder();
-        if (cartas.estaVacia()) {
+        CartaInglesa regresar = verCarta();
+        if (regresar == null) {
             stb.append("---");
         } else {
-            CartaInglesa regresar = cartas.peek();
             regresar.makeFaceUp();
             stb.append(regresar.toString());
         }

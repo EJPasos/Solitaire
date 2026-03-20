@@ -37,8 +37,8 @@ public class FoundationDeck {
                 }
             } else {
                 // si hay cartas entonces debe haber secuencia
-                CartaInglesa ultimaCarta = cartas.peek();
-                if (ultimaCarta.getValorBajo() + 1 == carta.getValorBajo()) {
+                CartaInglesa ultimaCarta = getUltimaCarta();
+                if (ultimaCarta != null && ultimaCarta.getValorBajo() + 1 == carta.getValorBajo()) {
                     // agregar la carta si el la siguiente a la última
                     cartas.push(carta);
                     agregado = true;
@@ -62,14 +62,25 @@ public class FoundationDeck {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
         if (cartas.estaVacia()) {
-            builder.append("---");
-        } else {
-            for (int i = 0; i < cartas.size(); i++) {
-                builder.append(cartas.get(i).toString());
-            }
+            return "---";
         }
+
+        StringBuilder builder = new StringBuilder();
+        Pila<CartaInglesa> aux = new Pila<>(13);
+
+        // cartas -> aux para poder reconstruir en orden base->tope
+        while (!cartas.estaVacia()) {
+            aux.push(cartas.pop());
+        }
+
+        // aux -> cartas restaurando y construyendo string
+        while (!aux.estaVacia()) {
+            CartaInglesa c = aux.pop();
+            builder.append(c.toString());
+            cartas.push(c);
+        }
+
         return builder.toString();
     }
 
@@ -86,7 +97,10 @@ public class FoundationDeck {
      * @return última carta, null si no hay cartas
      */
     public CartaInglesa getUltimaCarta() {
-        return cartas.peek();
+        if (cartas.estaVacia()) return null;
+        CartaInglesa top = cartas.pop();
+        cartas.push(top);
+        return top;
     }
 
     /**
