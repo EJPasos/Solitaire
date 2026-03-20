@@ -17,7 +17,7 @@ public class TableauView extends VBox {
     public TableauView(TableauDeck mazo, int indice) {
         this.mazo = mazo;
         this.indice = indice;
-        this.setSpacing(-80); // Para solapar las cartas verticalmente (negativo para overlap)
+        this.setSpacing(-110); // Para solapar las cartas verticalmente (negativo para overlap)
         this.setMinHeight(400);
         refrescar();
 
