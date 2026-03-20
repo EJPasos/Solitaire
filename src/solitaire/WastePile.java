@@ -11,21 +11,25 @@ import java.util.ArrayList;
  * @version (2025-2)
  */
 public class WastePile {
-    private ArrayList<CartaInglesa> cartas;
+    private Pila<CartaInglesa> cartas;
 
     public WastePile() {
-        cartas = new ArrayList<>();
+        cartas = new Pila<>(52);
     }
 
     public void addCartas(ArrayList<CartaInglesa> nuevas) {
-        cartas.addAll(nuevas);
+        for (CartaInglesa carta : nuevas) {
+            cartas.push(carta);
+        }
     }
 
     public ArrayList<CartaInglesa> emptyPile() {
         ArrayList<CartaInglesa> pile = new ArrayList<>();
-        if (!cartas.isEmpty()) {
-            pile.addAll(cartas);
-            cartas = new ArrayList<>();
+        if (!cartas.estaVacia()) {
+            for (int i = 0; i < cartas.size(); i++) {
+                pile.add(cartas.get(i));
+            }
+            cartas.clear();
         }
         return pile;
     }
@@ -35,27 +39,22 @@ public class WastePile {
      * @return Carta que está encima. Si está vacía, es null.
      */
     public CartaInglesa verCarta() {
-        CartaInglesa regresar = null;
-        if (!cartas.isEmpty()) {
-            regresar = cartas.getLast();
-        }
-        return regresar;
+        return cartas.peek();
     }
     public CartaInglesa getCarta() {
-        CartaInglesa regresar = null;
-        if (!cartas.isEmpty()) {
-            regresar = cartas.removeLast();
+        if (!cartas.estaVacia()) {
+            return cartas.pop();
         }
-        return regresar;
+        return null;
     }
 
     @Override
     public String toString() {
         StringBuilder stb = new StringBuilder();
-        if (cartas.isEmpty()) {
+        if (cartas.estaVacia()) {
             stb.append("---");
         } else {
-            CartaInglesa regresar = cartas.getLast();
+            CartaInglesa regresar = cartas.peek();
             regresar.makeFaceUp();
             stb.append(regresar.toString());
         }
@@ -63,6 +62,6 @@ public class WastePile {
     }
 
     public boolean hayCartas() {
-        return !cartas.isEmpty();
+        return !cartas.estaVacia();
     }
 }

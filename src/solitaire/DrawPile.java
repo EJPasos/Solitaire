@@ -10,12 +10,17 @@ import java.util.ArrayList;
  * @version 2025
  */
 public class DrawPile {
-    private ArrayList<CartaInglesa> cartas;
+    private Pila<CartaInglesa> cartas;
     private int cuantasCartasSeEntregan = 1;
 
     public DrawPile() {
         DeckOfCards.Mazo mazo = new DeckOfCards.Mazo();
-        cartas = mazo.getCartas();
+        ArrayList<CartaInglesa> iniciales = mazo.getCartas();
+        cartas = new Pila<>(52);
+        // Se inserta en reversa para que pop() entregue en el orden original de remove(0)
+        for (int i = iniciales.size() - 1; i >= 0; i--) {
+            cartas.push(iniciales.get(i));
+        }
         setCuantasCartasSeEntregan(3);
     }
 
@@ -47,7 +52,7 @@ public class DrawPile {
     public ArrayList<CartaInglesa> getCartas(int cantidad) {
         ArrayList<CartaInglesa> retiradas = new ArrayList<>();
         for (int i = 0; i < cantidad; i++) {
-            retiradas.add(cartas.remove(0));
+            retiradas.add(cartas.pop());
         }
         return retiradas;
     }
@@ -63,7 +68,7 @@ public class DrawPile {
         int maximoARetirar = cartas.size() < cuantasCartasSeEntregan ? cartas.size() : cuantasCartasSeEntregan;
 
         for (int i = 0; i < maximoARetirar; i++) {
-            CartaInglesa retirada = cartas.remove(0);
+            CartaInglesa retirada = cartas.pop();
             retirada.makeFaceUp();
             retiradas.add(retirada);
         }
@@ -75,15 +80,11 @@ public class DrawPile {
      * @return true si hay cartas, false si no.
      */
     public boolean hayCartas() {
-        return cartas.size() > 0;
+        return !cartas.estaVacia();
     }
 
     public CartaInglesa verCarta() {
-        CartaInglesa regresar = null;
-        if (!cartas.isEmpty()) {
-            regresar = cartas.getLast();
-        }
-        return regresar;
+        return cartas.peek();
     }
     /**
      * Agrega las cartas recibidas al monton y las voltea
@@ -91,15 +92,17 @@ public class DrawPile {
      * @param cartasAgregar cartas que se agregan
      */
     public void recargar(ArrayList<CartaInglesa> cartasAgregar) {
-        cartas = cartasAgregar;
-        for (CartaInglesa aCarta : cartas) {
+        cartas.clear();
+        for (int i = cartasAgregar.size() - 1; i >= 0; i--) {
+            CartaInglesa aCarta = cartasAgregar.get(i);
             aCarta.makeFaceDown();
+            cartas.push(aCarta);
         }
     }
 
     @Override
     public String toString() {
-        if (cartas.isEmpty()) {
+        if (cartas.estaVacia()) {
             return "-E-";
         }
         return "@";
